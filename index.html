@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Princess's Mission ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root { --romance-pink: #ff85a1; --deep-red: #c9184a; --soft-bg: #fff0f3; --designer-peach: #fce4ec; }
+        body { margin: 0; background-color: var(--soft-bg); font-family: 'Poppins', sans-serif; overflow-x: hidden; }
+        .container { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; box-sizing: border-box; }
+        
+        .card { 
+            background: rgba(255, 255, 255, 0.95); padding: 35px; border-radius: 40px; 
+            box-shadow: 0 20px 45px rgba(255, 133, 161, 0.15); width: 100%; max-width: 480px; 
+            text-align: center; border: 1px solid rgba(255, 255, 255, 0.5); position: relative; z-index: 10;
+        }
+
+        #welcome-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--deep-red); color: white; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
+            z-index: 9999; text-align: center; padding: 20px;
+        }
+
+        .input-group { text-align: left; margin-bottom: 15px; }
+        .input-group label { font-size: 0.8rem; font-weight: 600; color: var(--deep-red); margin-left: 5px; }
+        input { width: 100%; padding: 12px; border: 2px solid #ffccd5; border-radius: 12px; outline: none; box-sizing: border-box; font-family: inherit; transition: 0.3s; }
+        
+        .quiz-card { background: var(--designer-peach); border-radius: 30px; padding: 20px; border: 2px dashed var(--romance-pink); }
+        .quiz-row { display: flex; flex-direction: column; gap: 5px; padding: 15px; margin-bottom: 12px; background: white; border-radius: 20px; text-align: left; }
+        .option-btn { flex: 1; border: 1.5px solid #ffccd5; background: #fff5f7; padding: 10px; border-radius: 12px; cursor: pointer; font-weight: 600; transition: 0.2s; }
+        .option-btn.selected { background: var(--romance-pink); color: white; border-color: var(--deep-red); }
+
+        .btn { background: var(--romance-pink); color: white; border: none; padding: 18px; border-radius: 50px; cursor: pointer; font-weight: bold; width: 100%; font-size: 1.1rem; margin-top: 10px; transition: 0.3s; }
+        
+        #quiz-page, #final-q-page, #page-game, #page-celebration { display: none; }
+
+        .corner-frame { position: fixed; width: 120px; background: white; padding: 10px 10px 15px 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); z-index: 5; text-align: center; }
+        .corner-frame img { width: 100%; height: 110px; object-fit: cover; }
+        .photo-msg { font-size: 0.75rem; color: var(--deep-red); font-weight: 600; margin-top: 8px; font-family: 'Dancing Script', cursive; }
+
+        .top-left { top: 20px; left: 20px; transform: rotate(-10deg); }
+        .top-right { top: 20px; right: 20px; transform: rotate(10deg); }
+        .bottom-left { bottom: 20px; left: 20px; transform: rotate(5deg); }
+        .bottom-right { bottom: 20px; right: 20px; transform: rotate(-5deg); }
+
+        .rotating-cake { font-size: 60px; display: inline-block; animation: spinCake 4s linear infinite; }
+        @keyframes spinCake { 0% { transform: rotateY(0deg); } 100% { transform: rotateY(360deg); } }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop><source src="chill_music.mp3" type="audio/mpeg"></audio>
+    <audio id="clickSound"><source src="click_sound.mp3" type="audio/mpeg"></audio>
+    <audio id="tadaSound"><source src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3" type="audio/mpeg"></audio>
+
+    <div id="welcome-overlay">
+        <h1>Wait a minute...</h1>
+        <p style="font-size: 2.2rem;">AYOOOOOO HAKKKK 3ZOUZZZA! 👵✨</p>
+        <button id="runawayOldBtn" class="btn" style="width: auto; padding: 15px 40px; background: white; color: var(--deep-red);" onmouseover="moveOldBtn()">leee manichh kbiraa! 🙄</button>
+        <button style="margin-top: 60px; background: transparent; border: 1px solid rgba(255,255,255,0.3); color: white; cursor: pointer; padding: 5px 10px; border-radius: 8px; font-size: 0.75rem;" onclick="closeOverlay()">Okay, 3zouza w nos 🏳️</button>
+    </div>
+
+    <div id="age-page" class="container">
+        <div class="card">
+            <h2 style="font-family: 'Dancing Script'; font-size: 2.5rem; color: var(--deep-red);">Princess's Profile 👑</h2>
+            <div class="input-group"><label>ESMEK</label><input type="text" id="firstName" placeholder="Your Name"></div>
+            <div class="input-group"><label>L9BK</label><input type="text" id="lastName" placeholder="Your Last Name"></div>
+            <div class="input-group"><label>3ID MILDEK</label><input type="date" id="dob"></div>
+            <button class="btn" onclick="submitForm()">Enter Now ✨</button>
+        </div>
+    </div>
+
+    <div id="quiz-page" class="container">
+        <div class="card">
+            <h2 style="font-family: 'Dancing Script'; font-size: 2rem;">Quick Quiz ⚔️</h2>
+            <div class="quiz-card" style="max-height: 400px; overflow-y: auto;"><div id="quiz-container"></div></div>
+            <button class="btn" onclick="playClick(); showPage('final-q-page')">Finish 🚀</button>
+        </div>
+    </div>
+
+    <div id="final-q-page" class="container">
+        <div class="card">
+            <h2 style="font-family: 'Dancing Script'; font-size: 2.2rem; color: var(--deep-red);">Diva Verification 👤💅</h2>
+            <p id="security-hint" style="font-size: 0.8rem; color: #888;">Identity must be confirmed...</p>
+            <div class="input-group"><input type="text" id="partnerName" placeholder="Who is Him"></div>
+            <div class="input-group"><input type="text" id="partnerMeaning" placeholder="Complete: He is my...?"></div>
+            <button class="btn" onclick="validatePartner()">Unlock My Gift ❤️</button>
+        </div>
+    </div>
+
+    <div id="page-game" class="container" style="flex-direction: column;">
+        <h1 id="question-text" style="font-family: 'Dancing Script'; font-size: 2.8rem; color: var(--deep-red); text-align: center;">Do you love me?👉😳👈</h1>
+        <div style="display: flex; gap: 30px; margin-top: 40px; justify-content: center; width: 100%; position: relative;">
+            <button id="yesBtn" class="btn" style="width: auto; padding: 15px 60px;" onclick="revealSurprise()">YES🥳</button>
+            <button id="noBtn" class="btn" style="width: auto; padding: 12px 30px; background: #adb5bd;" onmouseover="moveNo()">NO😶</button>
+        </div>
+    </div>
+
+    <div id="page-celebration">
+        <div style="text-align: center; padding: 60px 20px;">
+            <div class="rotating-cake">🎂</div>
+            <h1 style="font-family: 'Dancing Script'; font-size: 3.5rem; color: var(--deep-red);">Happy Birthday <span id="userDisp"></span>! 🎈</h1>
+            <div style="background: white; padding: 25px; max-width: 450px; margin: 20px auto; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+                <p>🌹😘😘 kol 3amm w enti 7aya b alf 5ir! bech no93ed dima n7ebek ya a7la Diva 💅✨💎</p>
+            </div>
+            <div style="max-width: 320px; margin: 30px auto; border: 10px solid white; height: 500px; border-radius: 25px; overflow: hidden; background: #000;">
+                <video id="finalVideo" style="width: 100%; height: 100%; object-fit: cover;" controls loop>
+                    <source src="my_birthday_video.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+        <div class="corner-frame top-left"><img src="pic1.jpg"><div class="photo-msg">A7la dho7ka ❤️</div></div>
+        <div class="corner-frame top-right"><img src="pic2.jpg"><div class="photo-msg">Memories ✨</div></div>
+        <div class="corner-frame bottom-left"><img src="pic3.jpg"><div class="photo-msg">Our Best Day 🌹</div></div>
+        <div class="corner-frame bottom-right"><img src="pic4.jpg"><div class="photo-msg">My Princess 👑</div></div>
+    </div>
+
+    <script>
+        const quizData = [
+            { q: "Eli ycaryy 🎮", h: "Skill issues? 🤫 Check your match history!" },
+            { q: "Spends more money? 💸", h: "Diva habits... Who bought those flowers? 💅" },
+            { q: "Better aim? 🎯", h: "Valorant doesn't lie! 😂" },
+            { q: "Texting Master? 📱", h: "Who replies before the notification even pops up? ⚡" },
+            { q: "l7al9a th3ifaaa ⛓️", h: "Who starts crying during the movie? 🥺" },
+            { q: "1% Battery? 🪫", h: "Living life on the edge without a charger! 🔌" },
+            { q: "3a9lll 🧠", h: "Be honest Diva... 🤨" },
+            { q: "First to apologize? 🤝", h: "To keep the peace and the love! 🏳️❤️" },
+            { q: "Funniest? 😂", h: "Main character energy only! ✨" },
+            { q: "Jealous 😒", h: "Who says 'Who is she??' 🕵️‍♀️" },
+            { q: "Annoying 🦟", h: "Mosquito vibes... 😤" },
+            { q: "lkbirrr 👑", h: "Respect the elders, 3zouza! 👵💅" }
+        ];
+
+        const phrases = ["huh?", "almaaaa 5amem! 🥺", "Really?", "Click YES!", "almaa khwww!🚫", "🔒 No option 🙅‍♂️"];
+        let noClicks = 0;
+
+        const qContainer = document.getElementById('quiz-container');
+        quizData.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'quiz-row';
+            div.innerHTML = `
+                <div style="font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
+                    ${item.q} <a href="javascript:void(0)" onclick="alert('${item.h}')" style="font-size: 0.7rem; color: var(--romance-pink);">Hint ✨</a>
+                </div>
+                <div style="display:flex;gap:10px; margin-top: 5px;">
+                    <button class="option-btn" onclick="sel(this)">♀️ Me</button>
+                    <button class="option-btn" onclick="sel(this)">♂️ Him</button>
+                </div>`;
+            qContainer.appendChild(div);
+        });
+
+        function playClick() { const s = document.getElementById('clickSound'); s.currentTime = 0; s.play().catch(()=>{}); }
+        function sel(btn) { btn.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected')); btn.classList.add('selected'); }
+
+        function submitForm() {
+            const name = document.getElementById('firstName').value;
+            if(!name || !document.getElementById('dob').value) return alert("Fill everything! 👑");
+            const bg = document.getElementById('bgMusic'); 
+            bg.currentTime = 49; bg.volume = 0.2; bg.play().catch(()=>{});
+            document.getElementById('userDisp').innerText = name;
+            document.getElementById('age-page').style.display = 'none';
+            document.getElementById('welcome-overlay').style.display = 'flex';
+        }
+
+        function closeOverlay() { playClick(); document.getElementById('welcome-overlay').style.display = 'none'; showPage('quiz-page'); }
+        function showPage(id) { document.querySelectorAll('.container, #age-page').forEach(c => c.style.display = 'none'); document.getElementById(id).style.display = 'flex'; }
+
+        function validatePartner() {
+            const n = document.getElementById('partnerName').value.toLowerCase().trim();
+            const m = document.getElementById('partnerMeaning').value.toLowerCase().trim();
+            const hint = document.getElementById('security-hint');
+            const vNames = ["ysf", "youssef", "safsoufi", "yousef"];
+            const vMels = ["husband", "man", "boyfriend", "soulmate", "love", "everything", "bebe", "rajli"];
+            
+            if (vNames.includes(n) && vMels.some(val => m.includes(val))) { playClick(); showPage('page-game'); } 
+            else { hint.innerText = "Wrong person! Try again, Princess... 🤨"; hint.style.color = "var(--deep-red)"; }
+        }
+
+        function moveNo() {
+            const b = document.getElementById('noBtn'), q = document.getElementById('question-text');
+            if(noClicks < phrases.length) q.innerText = phrases[noClicks++];
+            b.style.position = 'fixed'; b.style.left = Math.random() * (window.innerWidth - 120) + 'px'; b.style.top = Math.random() * (window.innerHeight - 120) + 'px';
+            const yes = document.getElementById('yesBtn');
+            let s = parseFloat(yes.style.transform.replace('scale(', '')) || 1;
+            yes.style.transform = `scale(${s + 0.15})`;
+        }
+
+        function revealSurprise() {
+            playClick(); 
+            // Background music keeps playing
+            document.getElementById('tadaSound').play();
+            confetti({ particleCount: 250, spread: 100, origin: { y: 0.6 } });
+            
+            document.getElementById('page-game').style.display = 'none'; 
+            document.getElementById('page-celebration').style.display = 'block';
+            document.body.style.overflowY = 'auto'; 
+            
+            const v = document.getElementById('finalVideo');
+            v.muted = true; // Video plays without sound
+            v.play();
+
+            setInterval(() => {
+                const divaEmojis = ['💋', '❤️', '✨', '💎', '💅', '👑'];
+                const el = document.createElement('div');
+                el.innerHTML = divaEmojis[Math.floor(Math.random() * divaEmojis.length)];
+                el.style.position = 'fixed'; el.style.top = '-20px'; el.style.left = Math.random() * 100 + 'vw'; el.style.fontSize = '25px'; el.style.zIndex = '100';
+                document.body.appendChild(el);
+                el.animate([{transform:'translateY(0) rotate(0deg)'},{transform:`translateY(110vh) rotate(${Math.random()*360}deg)`}], 5000).onfinish = ()=>el.remove();
+            }, 200);
+        }
+
+        function moveOldBtn() { const b = document.getElementById('runawayOldBtn'); b.style.position = 'fixed'; b.style.left = Math.random() * (window.innerWidth - 150) + 'px'; b.style.top = Math.random() * (window.innerHeight - 100) + 'px'; }
+    </script>
+</body>
+</html>
